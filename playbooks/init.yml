@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+      
+  - name: create the ansible user
+    tags: one
+    user:
+      name: ansible
+      groups: root
+      state: present
+      
+  - name: add ansible user to the sudoers.d
+    tags: two
+    copy:
+      src: ../files/ansible.sudoer
+      dest: /etc/sudoers.d/ansible
+      owner: root
+      group: root
+
+  - name: add public key to ansible's authorized keys file
+    tags: three
+    authorized_key:
+      user: ansible
+      key: "{{ lookup('file', '~/.ssh/id_ansible.pub')}}"
+      state: present
+...
